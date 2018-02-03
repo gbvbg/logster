@@ -203,7 +203,7 @@ class NmonLogster(LogsterParser):
             name = "%s.%s.%s" % (path, nmonSection,  nmonHeader[i])
             timestamp=time.mktime(dt.timetuple())
             if self.tz != 'local':
-                tz = timezone(self.tz)
+                tz = timezone(self.tz) 
                 timestamp=time.mktime(dt.astimezone(tz).timetuple())
             m = MetricObject(name, values[i], timestamp=timestamp)
             self.metrics += [m]
