@@ -10,7 +10,8 @@ tests_require = [
         'contextlib2;python_version<"3.5"',
         'pathlib;python_version<="3.3"', 
         'nose',
-        'portalocker'
+        'portalocker', 
+        'pytz'
     ]
 
 setup(
