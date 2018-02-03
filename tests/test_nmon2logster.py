@@ -12,19 +12,20 @@ import time
 from datetime import datetime
 from io import BytesIO, StringIO
 import sys
+import os
+import subprocess
+import fileinput
+from pathlib import Path
+import shutil
 
 try:
     from contextlib import redirect_stdout, redirect_stderr
 except ImportError:
     from contextlib2 import redirect_stdout, redirect_stderr
-    
-import fileinput
+
 from logster.parsers.NmonLogster import NmonLogster
-import subprocess
-from pathlib import Path
 import logster.logster_cli
-import os
-import shutil
+
 
 class TestNmonLogster(unittest.TestCase):
 
@@ -33,10 +34,10 @@ class TestNmonLogster(unittest.TestCase):
         self.out = BytesIO()
         self.cvt = NmonLogster()
         self.cvt.timeShift = None
-
+        
     def tearDown(self):
         self.cvt.timeShift = None
-
+        
     def test_make_header(self):
         inline = ('CPU_ALL,CPU Total izh1,User%,'
                   'Sys%,Wait%,Idle%,Busy,PhysicalCPUs')
@@ -234,6 +235,7 @@ class TestNmonLogster(unittest.TestCase):
                                       '--locker=portalocker',
                                       '-l', log_state_path,
                                       '-s', log_state_path,
+                                      '--parser-options', '--timezone "Europe/Berlin"',
                                       file_path]):
                 logster.logster_cli.main()
 
