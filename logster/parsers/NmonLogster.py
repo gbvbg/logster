@@ -13,6 +13,7 @@
 import time
 from datetime import datetime
 from datetime import timedelta
+from pytz import timezone
 import re
 import optparse
 import logging
@@ -67,7 +68,10 @@ class NmonLogster(LogsterParser):
                     help='Specify interval to round timestamps. Default is None.')
         optparser.add_option('--startdate', '-s', action='store',
                     default=None,
-                    help='Specvify start date.')
+                    help='Change start date of nmon file.')
+        optparser.add_option('--timezone', '-z', action='store',
+                    default='local',
+                    help='Specify timezone for nmon file.')
 
         opts, args = optparser.parse_args(args=options)
         self.roundTo = opts.roundTo
@@ -76,6 +80,7 @@ class NmonLogster(LogsterParser):
             self.startdate = datetime.strptime(opts.startdate, "%d.%m.%Y")
         self.path = ''
         self.metrics = []
+        self.tz = opts.timezone
 
     def parse_line(self, line):
         try:
@@ -196,7 +201,11 @@ class NmonLogster(LogsterParser):
 
         for i in range(2, limit):
             name = "%s.%s.%s" % (path, nmonSection,  nmonHeader[i])
-            m = MetricObject(name, values[i], timestamp=time.mktime(dt.timetuple()))
+            timestamp=time.mktime(dt.timetuple())
+            if self.tz != 'local':
+                tz = timezone(self.tz)
+                timestamp=time.mktime(dt.astimezone(tz).timetuple())
+            m = MetricObject(name, values[i], timestamp=timestamp)
             self.metrics += [m]
 
     def get_state(self, duration):
