@@ -10,6 +10,8 @@ except ImportError:
 import unittest    
 import time
 from datetime import datetime
+import pytz
+from tzlocal import get_localzone
 from io import BytesIO, StringIO
 import sys
 import os
@@ -97,6 +99,7 @@ class TestNmonLogster(unittest.TestCase):
             'root.PCPU_ALL.Idle 59.99 1410243010',
             'root.PCPU_ALL.Entitled_Capacity 256.00 1410243010'
             ]
+        expected = list(map(line_msk_to_local, expected))
         
         for i in range(len(expected)):
             o = self.cvt.metrics[i]
@@ -235,7 +238,7 @@ class TestNmonLogster(unittest.TestCase):
                                       '--locker=portalocker',
                                       '-l', log_state_path,
                                       '-s', log_state_path,
-                                      '--parser-options', '--timezone "Europe/Berlin"',
+                                      '--parser-options', '--timezone "Europe/Moscow"',
                                       file_path]):
                 logster.logster_cli.main()
 
@@ -340,7 +343,17 @@ class TestNmonLogster(unittest.TestCase):
                     logster.logster_cli.main()
                     
                 self.assertFalse('This throws ' in str(context.exception))    
+
+def line_msk_to_local(line):
+    tokens = line.split(' ')
+    dt=datetime.fromtimestamp(int(tokens[2]))
+    msk = pytz.timezone('Europe/Moscow')
+    local_tz = get_localzone()
+    dt_msk = msk.localize(dt)
+    dt_local = local_tz.localize(dt)
+    dt = dt_local - (dt_msk - dt_local)
+    return ('%s %s %.0f' % (tokens[0], tokens[1],  time.mktime(dt.timetuple())))
         
-        
+
 if __name__ == "__main__":
     unittest.main()
