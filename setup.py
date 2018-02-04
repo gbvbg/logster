@@ -11,7 +11,8 @@ tests_require = [
         'pathlib;python_version<="3.3"', 
         'nose',
         'portalocker', 
-        'pytz'
+        'pytz',
+        'tzlocal'
     ]
 
 setup(
