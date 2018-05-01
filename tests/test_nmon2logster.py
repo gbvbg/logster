@@ -88,16 +88,16 @@ class TestNmonLogster(unittest.TestCase):
                                       'Sys  ,Wait  ,Idle  , '
                                       'Entitled Capacity ')
         line = "PCPU_ALL,T0001,26.95,7.03,6.0,59.99,256.00"
-        dt = time.strptime("09-SEP-2014 09:10:10", "%d-%b-%Y %H:%M:%S")
+        dt = time.strptime("09-DEC-2014 09:10:10", "%d-%b-%Y %H:%M:%S")
         dt = datetime.fromtimestamp(time.mktime(dt))
 
         self.cvt.read_nmon_line(line, "PCPU_ALL", header, dt, "root")
         expected = [
-            'root.PCPU_ALL.User 26.95 1410243010',
-            'root.PCPU_ALL.Sys 7.03 1410243010',
-            'root.PCPU_ALL.Wait 6.0 1410243010',
-            'root.PCPU_ALL.Idle 59.99 1410243010',
-            'root.PCPU_ALL.Entitled_Capacity 256.00 1410243010'
+            'root.PCPU_ALL.User 26.95 1418105410',
+            'root.PCPU_ALL.Sys 7.03 1418105410',
+            'root.PCPU_ALL.Wait 6.0 1418105410',
+            'root.PCPU_ALL.Idle 59.99 1418105410',
+            'root.PCPU_ALL.Entitled_Capacity 256.00 1418105410'
             ]
         expected = list(map(line_msk_to_local, expected))
         
@@ -238,7 +238,7 @@ class TestNmonLogster(unittest.TestCase):
                                       '--locker=portalocker',
                                       '-l', log_state_path,
                                       '-s', log_state_path,
-                                      '--parser-options', '--timezone "Europe/Moscow"',
+                                      '--parser-options', '--timezone Europe/Moscow',
                                       file_path]):
                 logster.logster_cli.main()
 
@@ -345,6 +345,7 @@ class TestNmonLogster(unittest.TestCase):
                 self.assertFalse('This throws ' in str(context.exception))    
 
 def line_msk_to_local(line):
+#    import pdb; pdb.set_trace()
     tokens = line.split(' ')
     dt=datetime.fromtimestamp(int(tokens[2]))
     msk = pytz.timezone('Europe/Moscow')

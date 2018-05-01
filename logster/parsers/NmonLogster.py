@@ -13,7 +13,7 @@
 import time
 from datetime import datetime
 from datetime import timedelta
-from pytz import timezone
+import pytz
 import re
 import optparse
 import logging
@@ -201,10 +201,10 @@ class NmonLogster(LogsterParser):
 
         for i in range(2, limit):
             name = "%s.%s.%s" % (path, nmonSection,  nmonHeader[i])
-            timestamp=time.mktime(dt.timetuple())
+            timestamp = time.mktime(dt.timetuple())
             if self.tz != 'local':
-                tz = timezone(self.tz) 
-                timestamp=time.mktime(dt.astimezone(tz).timetuple())
+                tz = pytz.timezone(self.tz)
+                timestamp = time.mktime(dt.astimezone(tz).timetuple())
             m = MetricObject(name, values[i], timestamp=timestamp)
             self.metrics += [m]
 
